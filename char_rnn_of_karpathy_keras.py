@@ -13,12 +13,13 @@
 from __future__ import print_function
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Dropout
-from keras.layers import LSTM,TimeDistributedDense,SimpleRNN
+from keras.layers import LSTM, TimeDistributed, SimpleRNN
 from keras.utils.data_utils import get_file
 import numpy as np
 from time import sleep
 import random
 import sys
+import h5py
 
 ##uncomment below if you want to use nietzches writings as the corpus
 
@@ -58,7 +59,7 @@ for i, sentence in enumerate(sentences):
 for i, sentence in enumerate(next_chars):
     for t, char in enumerate(sentence):
         y[i, t, char_indices[char]] = 1
-    
+
 
 print ('vetorization completed')
 
@@ -71,10 +72,10 @@ print ('vetorization completed')
 print('Build model...')
 model = Sequential()
 #model.add(LSTM(512, return_sequences=True, input_shape=(maxlen, len(chars))))  # original one
-model.add(LSTM(512, input_dim=len(chars),return_sequences=True)) #minesh witout specifying the input_length
+model.add(LSTM(512, input_shape=(None, len(chars)), return_sequences=True)) #minesh witout specifying the input_length
 model.add(LSTM(512, return_sequences=True)) #- original
 model.add(Dropout(0.2))
-model.add(TimeDistributedDense(len(chars)))
+model.add(TimeDistributed(Dense(len(chars))))
 model.add(Activation('softmax'))
 
 model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
@@ -95,9 +96,9 @@ for iteration in range(1, 6):
     print()
     print('-' * 50)
     print('Iteration', iteration)
-    history=model.fit(X, y, batch_size=128, nb_epoch=1,verbose=0)
-    sleep(0.1) # https://github.com/fchollet/keras/issues/2110
-    
+    history=model.fit(X, y, batch_size=128, epochs=1, verbose=0)
+    # sleep(0.1) # https://github.com/fchollet/keras/issues/2110
+
     # saving models at the following iterations -- uncomment it if you want tos save weights and load it later
     #if iteration==1 or iteration==3 or iteration==5 or iteration==10 or iteration==20 or iteration==30 or iteration==50 or iteration==60 :
     #    model.save_weights('Karpathy_LSTM_weights_'+str(iteration)+'.h5', overwrite=True)
@@ -107,9 +108,9 @@ for iteration in range(1, 6):
     print ('loss is')
     print (history.history['loss'][0])
     print (history)
-    print()    
+    print()
 
-    
+
 
 
 # #### testing
@@ -130,22 +131,22 @@ for i in range(320):
     preds = model.predict(x, verbose=0)[0]
     #print (np.argmax(preds[7]))
     next_index=np.argmax(preds[len(seed_string)-1])
-    
-    
+
+
     #next_index=np.argmax(preds[len(seed_string)-11])
     #print (preds.shape)
     #print (preds)
     #next_index = sample(preds, 1) #diversity is 1
     next_char = indices_char[next_index]
     seed_string = seed_string + next_char
-    
+
     #print (seed_string)
     #print ('##############')
     #if i==40:
     #    print ('####')
     sys.stdout.write(next_char)
 
-sys.stdout.flush()    
+sys.stdout.flush()
 
 
 
