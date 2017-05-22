@@ -83,6 +83,9 @@ for iteration in range(1, 30):
     history=model.fit(X, y, batch_size=128, epochs=1, callbacks=[tensorboard])
     # sleep(0.1) # https://github.com/fchollet/keras/issues/2110
 
+    model.save('shakes-iter-' + iteration + '.h5')
+
+
     seed_string="brutus:"
     # seed_string="b"
     print ("seed string -->", seed_string)
@@ -96,7 +99,6 @@ for iteration in range(1, 30):
         preds = model.predict(x, verbose=0)[0]
         #print (np.argmax(preds[7]))
         next_index=np.argmax(preds[len(seed_string)-1])
-
 
         #next_index=np.argmax(preds[len(seed_string)-11])
         #print (preds.shape)
@@ -117,6 +119,6 @@ for iteration in range(1, 30):
     #    model.save_weights('Karpathy_LSTM_weights_'+str(iteration)+'.h5', overwrite=True)
     #start_index = random.randint(0, len(text) - maxlen - 1)
 
-model.save('shakes-500.h5')
+model.save('shakes-final.h5')
 
 
