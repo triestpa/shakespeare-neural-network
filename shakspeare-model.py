@@ -19,14 +19,10 @@ print('corpus length:', len(text))
 
 tensorboard = TensorBoard(log_dir='./tb_logs', histogram_freq=0, write_graph=True, write_images=False, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None)
 
-text = text[:5000]
-
 chars = sorted(list(set(text)))
 print('total chars:', len(chars))
 char_indices = dict((c, i) for i, c in enumerate(chars))
 indices_char = dict((i, c) for i, c in enumerate(chars))
-
-
 
 # split the corpus into sequences of length=maxlen
 #input is a sequence of 40 chars and target is also a sequence of 40 chars shifted by one position
