@@ -1,15 +1,3 @@
-
-# coding: utf-8
-
-# In[1]:
-
-
-####
-
-#minesh.mathew@gmail.com
-#modified version of text generation example in keras; trained in a many-to-many fashion using a time distributed dense layer
-
-####
 from __future__ import print_function
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Dropout
@@ -20,6 +8,11 @@ from time import sleep
 import random
 import sys
 import h5py
+
+try:
+    import cPickle as pickle
+except:
+    import pickle
 
 ##uncomment below if you want to use nietzches writings as the corpus
 
@@ -32,6 +25,8 @@ chars = sorted(list(set(text)))
 print('total chars:', len(chars))
 char_indices = dict((c, i) for i, c in enumerate(chars))
 indices_char = dict((i, c) for i, c in enumerate(chars))
+
+
 
 # split the corpus into sequences of length=maxlen
 #input is a sequence of 40 chars and target is also a sequence of 40 chars shifted by one position
@@ -61,12 +56,8 @@ for i, sentence in enumerate(next_chars):
         y[i, t, char_indices[char]] = 1
 
 
-print ('vetorization completed')
 
 
-
-
-# In[2]:
 
 # build the model: 2 stacked LSTM
 print('Build model...')
@@ -82,21 +73,18 @@ model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
 
 print ('model is made')
 
+
+
 # train the model, output generated text after each iteration
-
-
-# In[9]:
 
 print (model.summary())
 
-
-# In[ ]:
 
 for iteration in range(1, 6):
     print()
     print('-' * 50)
     print('Iteration', iteration)
-    history=model.fit(X, y, batch_size=128, epochs=1, verbose=0)
+    history=model.fit(X, y, batch_size=128, epochs=1, verbose=1)
     # sleep(0.1) # https://github.com/fchollet/keras/issues/2110
 
     # saving models at the following iterations -- uncomment it if you want tos save weights and load it later
@@ -113,13 +101,14 @@ for iteration in range(1, 6):
 
 
 
+
+
 # #### testing
 # now you use the trained model to generat text.
 # the  output shown in this notebook is for a model which is trained only for 1 iteration
 
-# In[6]:
-
-seed_string="brutus:"
+# seed_string="brutus:"
+seed_string="b"
 print ("seed string -->", seed_string)
 print ('The generated text is')
 sys.stdout.write(seed_string),
@@ -147,10 +136,6 @@ for i in range(320):
     sys.stdout.write(next_char)
 
 sys.stdout.flush()
-
-
-
-# In[ ]:
-
+model.save('shakes-500.h5')
 
 
