@@ -76,7 +76,7 @@ print ('model is made')
 print (model.summary())
 
 
-for iteration in range(1, 6):
+for iteration in range(1, 30):
     print()
     print('-' * 50)
     print('Iteration', iteration)
@@ -110,14 +110,13 @@ for iteration in range(1, 6):
         #if i==40:
         #    print ('####')
         sys.stdout.write(next_char)
+        sys.stdout.flush()
 
     # saving models at the following iterations -- uncomment it if you want tos save weights and load it later
     #if iteration==1 or iteration==3 or iteration==5 or iteration==10 or iteration==20 or iteration==30 or iteration==50 or iteration==60 :
     #    model.save_weights('Karpathy_LSTM_weights_'+str(iteration)+'.h5', overwrite=True)
     #start_index = random.randint(0, len(text) - maxlen - 1)
 
-
-sys.stdout.flush()
 model.save('shakes-500.h5')
 
 
