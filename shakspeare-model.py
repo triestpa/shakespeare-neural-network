@@ -83,7 +83,7 @@ for iteration in range(1, 30):
     history=model.fit(X, y, batch_size=128, epochs=1, callbacks=[tensorboard])
     # sleep(0.1) # https://github.com/fchollet/keras/issues/2110
 
-    model.save('shakes-iter-' + iteration + '.h5')
+    model.save('shakes-iter-' + str(iteration) + '.h5')
 
 
     seed_string="brutus:"
