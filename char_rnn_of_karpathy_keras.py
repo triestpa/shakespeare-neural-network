@@ -92,23 +92,14 @@ for iteration in range(1, 6):
     #    model.save_weights('Karpathy_LSTM_weights_'+str(iteration)+'.h5', overwrite=True)
     #start_index = random.randint(0, len(text) - maxlen - 1)
 
-    #sys.stdout.flush()
-    print ('loss is')
-    print (history.history['loss'][0])
-    print (history)
-    print()
-
-
-
-
 
 
 # #### testing
 # now you use the trained model to generat text.
 # the  output shown in this notebook is for a model which is trained only for 1 iteration
 
-# seed_string="brutus:"
-seed_string="b"
+seed_string="brutus:"
+# seed_string="b"
 print ("seed string -->", seed_string)
 print ('The generated text is')
 sys.stdout.write(seed_string),
