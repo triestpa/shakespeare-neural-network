@@ -20,6 +20,8 @@ import sys
 path = './textdatasets/lotr_combined.txt'
 text = open(path).read().lower()
 
+text = text[50000:52000]
+
 print('corpus length:', len(text))
 
 chars = sorted(list(set(text)))
@@ -59,11 +61,11 @@ print('Build model...')
 model = Sequential()
 model.add(LSTM(512, input_shape=(None, len(chars)), return_sequences=True))
 model.add(LSTM(512, return_sequences=True))
-model.add(LSTM(512, return_sequences=True))
-model.add(Dropout(0.2))
+# model.add(LSTM(512, return_sequences=True))
+model.add(Dropout(0.8))
 model.add(TimeDistributed(Dense(len(chars))))
 model.add(Activation('softmax'))
-optimizer = RMSprop(lr=0.002)
+optimizer = RMSprop(lr=0.0002)
 model.compile(loss='categorical_crossentropy', optimizer=optimizer)
 
 print (model.summary())
