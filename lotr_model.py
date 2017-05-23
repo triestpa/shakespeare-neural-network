@@ -55,6 +55,7 @@ for i, sentence in enumerate(next_chars):
 print('Build model...')
 model = Sequential()
 model.add(LSTM(512, input_shape=(maxlen, len(chars)), return_sequences=True))
+model.add(Dropout(0.2))
 model.add(LSTM(512, return_sequences=True))
 model.add(Dropout(0.2))
 model.add(LSTM(512, return_sequences=True))
@@ -63,7 +64,7 @@ model.add(TimeDistributed(Dense(len(chars))))
 # model.add(Dense(len(chars)))
 model.add(Activation('softmax'))
 
-optimizer = RMSprop(lr=0.01)
+optimizer = RMSprop(lr=0.001)
 model.compile(loss='categorical_crossentropy', optimizer=optimizer)
 
 def sample(preds, temperature=1.0):
