@@ -3,6 +3,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Activation, Dropout
 from keras.layers import LSTM, TimeDistributed, SimpleRNN
 from keras.callbacks import TensorBoard
+from keras.optimizers import RMSprop
 from keras.utils.data_utils import get_file
 import numpy as np
 from time import sleep
@@ -14,8 +15,12 @@ import h5py
 
 #path = get_file('nietzsche.txt', origin="https://s3.amazonaws.com/text-datasets/nietzsche.txt")
 #text = open(path).read().lower()
-text = open('./textdatasets/tinyshakesepare.txt').read().lower()
+path = './textdatasets/tinyshakesepare.txt'
+
+text = open(path).read().lower()
+
 print('corpus length:', len(text))
+
 
 tensorboard = TensorBoard(log_dir='./tb_logs', histogram_freq=0, write_graph=True, write_images=False, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None)
 

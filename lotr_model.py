@@ -27,14 +27,17 @@ print('total chars:', len(chars))
 char_indices = dict((c, i) for i, c in enumerate(chars))
 indices_char = dict((i, c) for i, c in enumerate(chars))
 
-# cut the text in semi-redundant sequences of maxlen characters
+# split the corpus into sequences of length=maxlen
+#input is a sequence of 40 chars and target is also a sequence of 40 chars shifted by one position
+#for eg: if you maxlen=3 and the text corpus is abcdefghi, your input ---> target pairs will be
+# [a,b,c] --> [b,c,d], [b,c,d]--->[c,d,e]....and so on
 maxlen = 40
-step = 3
+step = 1
 sentences = []
 next_chars = []
 for i in range(0, len(text) - maxlen, step):
     sentences.append(text[i: i + maxlen])
-    next_chars.append(text[i + maxlen])
+    next_chars.append(text[i+1:i +1+ maxlen])
 print('nb sequences:', len(sentences))
 
 print('Vectorization...')
@@ -54,18 +57,16 @@ for i, sentence in enumerate(next_chars):
 # build the model
 print('Build model...')
 model = Sequential()
-model.add(LSTM(512, input_shape=(maxlen, len(chars)), return_sequences=True))
-model.add(Dropout(0.2))
+model.add(LSTM(512, input_shape=(None, len(chars)), return_sequences=True))
 model.add(LSTM(512, return_sequences=True))
-model.add(Dropout(0.2))
 model.add(LSTM(512, return_sequences=True))
 model.add(Dropout(0.2))
 model.add(TimeDistributed(Dense(len(chars))))
-# model.add(Dense(len(chars)))
 model.add(Activation('softmax'))
-
-optimizer = RMSprop(lr=0.001)
+optimizer = RMSprop(lr=0.002)
 model.compile(loss='categorical_crossentropy', optimizer=optimizer)
+
+print (model.summary())
 
 def sample(preds, temperature=1.0):
     # print(preds)
@@ -87,10 +88,15 @@ for iteration in range(1, 60):
     print()
     print('-' * 50)
     print('Iteration', iteration)
-    model.fit(X, y,
+    history = model.fit(X, y,
               batch_size=128,
               epochs=1,
               callbacks=[tensorboard])
+
+
+    print ('loss is')
+    print (history.history['loss'][0])
+    print (history)
 
     model.save('lotr-iter-' + str(iteration) + '.h5')
 
