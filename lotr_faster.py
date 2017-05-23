@@ -9,7 +9,7 @@ has at least ~100k characters. ~1M is better.
 
 from __future__ import print_function
 from keras.models import Sequential
-from keras.layers import Dense, Activation
+from keras.layers import Dense, Activation, Dropout
 from keras.layers import LSTM
 from keras.optimizers import RMSprop
 from keras.utils.data_utils import get_file
@@ -17,8 +17,7 @@ import numpy as np
 import random
 import sys
 
-path = get_file('nietzsche.txt', origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
-# path = './textdatasets/tinyshakesepare.txt'
+path = './textdatasets/lotr_combined.txt'
 text = open(path).read().lower()
 
 print('corpus length:', len(text))
@@ -50,13 +49,13 @@ for i, sentence in enumerate(sentences):
 # build the model: a single LSTM
 print('Build model...')
 model = Sequential()
-model.add(LSTM(128, input_shape=(maxlen, len(chars))))
-#model.add(LSTM(128))
-#model.add(LSTM(128))
+model.add(LSTM(256, input_shape=(maxlen, len(chars)), return_sequences=True))
+model.add(LSTM(256))
+model.add(Dropout(0.2))
 model.add(Dense(len(chars)))
 model.add(Activation('softmax'))
 
-optimizer = RMSprop(lr=0.01)
+optimizer = RMSprop(lr=0.002)
 model.compile(loss='categorical_crossentropy', optimizer=optimizer)
 
 
@@ -70,25 +69,27 @@ def sample(preds, temperature=1.0):
     return np.argmax(probas)
 
 # train the model, output generated text after each iteration
-for iteration in range(1, 60):
+for iteration in range(1, 500):
     print()
     print('-' * 50)
     print('Iteration', iteration)
-    model.fit(X, y,
-              batch_size=128,
+    history = model.fit(X, y,
+              batch_size=64,
               epochs=1)
 
     start_index = random.randint(0, len(text) - maxlen - 1)
 
-    for diversity in [0.2, 0.5, 1.0, 1.2]:
-        print()
-        print('----- diversity:', diversity)
+    model.save('lotr-iter-' + str(iteration) + '.h5')
+    target = open('lotr-iter' + str(iteration) + '.txt', 'w')
+
+    target.write('Loss is ' + str(history.history['loss'][0]) + '\n')
+
+    for diversity in [0.2, 0.4, 0.6, 0.8, 1.0, 1.2]:
+        target.write('\n----- diversity:' +  str(diversity) + '\n')
 
         generated = ''
         sentence = text[start_index: start_index + maxlen]
         generated += sentence
-        print('----- Generating with seed: "' + sentence + '"')
-        sys.stdout.write(generated)
 
         for i in range(400):
             x = np.zeros((1, maxlen, len(chars)))
@@ -100,10 +101,12 @@ for iteration in range(1, 60):
             next_char = indices_char[next_index]
 
             generated += next_char
-            sentence = sentence[1:] + next_char
+            # sentence = sentence[1:] + next_char
 
-            sys.stdout.write(next_char)
-            sys.stdout.flush()
-        print()
+            # sys.stdout.write(next_char)
+            # sys.stdout.flush()
+        target.write(generated)
+        target.flush()
+    target.close()
 
-model.save('lstm-sample-nietzsche.h5')
+model.save('lotr-final.h5')
