@@ -65,7 +65,9 @@ model.add(Dropout(0.2))
 model.add(TimeDistributed(Dense(len(chars))))
 model.add(Activation('softmax'))
 
-model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
+optimizer = RMSprop(lr=0.01)
+
+model.compile(loss='categorical_crossentropy', optimizer=optimizer)
 
 print ('model is made')
 
