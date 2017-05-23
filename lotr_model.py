@@ -20,8 +20,6 @@ import sys
 path = './textdatasets/lotr_combined.txt'
 text = open(path).read().lower()
 
-text = text[50000:52000]
-
 print('corpus length:', len(text))
 
 chars = sorted(list(set(text)))
@@ -59,13 +57,13 @@ for i, sentence in enumerate(next_chars):
 # build the model
 print('Build model...')
 model = Sequential()
-model.add(LSTM(512, input_shape=(None, len(chars)), return_sequences=True))
-model.add(LSTM(512, return_sequences=True))
+model.add(LSTM(256, input_shape=(None, len(chars)), return_sequences=True))
+model.add(LSTM(256, return_sequences=True))
 # model.add(LSTM(512, return_sequences=True))
-model.add(Dropout(0.8))
+model.add(Dropout(0.2))
 model.add(TimeDistributed(Dense(len(chars))))
 model.add(Activation('softmax'))
-optimizer = RMSprop(lr=0.0002)
+optimizer = RMSprop(lr=0.002)
 model.compile(loss='categorical_crossentropy', optimizer=optimizer)
 
 print (model.summary())
@@ -91,7 +89,7 @@ for iteration in range(1, 60):
     print('-' * 50)
     print('Iteration', iteration)
     history = model.fit(X, y,
-              batch_size=128,
+              batch_size=64,
               epochs=1,
               callbacks=[tensorboard])
 
@@ -111,8 +109,6 @@ for iteration in range(1, 60):
         generated = ''
         sentence = text[start_index: start_index + maxlen]
         generated += sentence
-        print('----- Generating with seed: "' + sentence + '"')
-        sys.stdout.write(generated)
 
         for i in range(50):
             x = np.zeros((1, maxlen, len(chars)))
